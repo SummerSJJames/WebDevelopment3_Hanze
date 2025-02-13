@@ -4,55 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
     <header>
         <h1>User Profile</h1>
         <nav>
             <ul>
-                <li><a href="index.html">Memory Game</a></li>
+                 <li><a href="index.html">Memory Game</a></li>
+                <li><a href="user.html" class="active">Gebruikerspagina</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
-        <section id="user-info">
+    <main class="user-main">
+        <section id="user-info" class="user-section">
             <h2>User Information</h2>
-            <p><strong>User ID:</strong> <span id="user-id"></span></p>
-            <p><strong>Username:</strong> <span id="username"></span></p>
-            <p><strong>Email:</strong> <span id="email"></span></p>
+            <div class="info-group">
+                <p><strong>Username:</strong> <span id="username"></span></p>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+            </div>
         </section>
 
-        <section id="preferences">
+        <section id="preferences" class="user-section">
             <h2>Change Preferences</h2>
             <form id="preferences-form">
-                <label for="image-api">Favorite Image API:</label>
-                <select id="image-api" name="image-api">
-                    <option value="dog">DogAPI</option>
-                    <option value="lorem">Lorem Picsum</option>
-                    <option value="cat">The CATAAS</option>
-                    <option value="pokemon">Pokemon</option>
-                </select>
+                <div class="form-group">
+                    <label for="image-api">Favorite Image API:</label>
+                    <select id="image-api" name="image-api">
+                        <option value="dog">DogAPI</option>
+                        <option value="lorem">Lorem Picsum</option>
+                        <option value="cat">The CATAAS</option>
+                        <option value="pokemon">Pokemon</option>
+                    </select>
+                </div>
 
-                <label for="card-found-color">Color for Found Cards:</label>
-                <input type="color" id="card-found-color" name="card-found-color" value="#00FF00">
+                <div class="form-group">
+                    <label for="card-found-color">Color for Found Cards:</label>
+                    <input type="color" id="card-found-color" name="card-found-color" value="#00FF00">
+                </div>
 
-                <label for="card-closed-color">Color for Closed Cards:</label>
-                <input type="color" id="card-closed-color" name="card-closed-color" value="#FFFFFF">
+                <div class="form-group">
+                    <label for="card-closed-color">Color for Closed Cards:</label>
+                    <input type="color" id="card-closed-color" name="card-closed-color" value="#FFFFFF">
+                </div>
 
                 <button type="submit" id="save-preferences">Save Preferences</button>
             </form>
         </section>
 
-        <section id="email-change-form">
+        <section id="email-change-form" class="user-section">
             <h2>Change Email</h2>
             <form id="change-email-form">
-                <label for="new-email">New Email:</label>
-                <input type="email" id="new-email" name="new-email" required>
+                <div class="form-group">
+                    <label for="new-email">New Email:</label>
+                    <input type="email" id="new-email" name="new-email" required>
+                </div>
 
-                <label for="confirm-password">Password:</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
+                <div class="form-group">
+                    <label for="confirm-password">Password:</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
 
                 <button type="submit" id="change-email-button">Change Email</button>
             </form>
@@ -62,7 +74,7 @@
     <footer>
         <p>© 2024 Memory Game</p>
     </footer>
-    <script src="api.js"></script>
-    <script src="user.js"></script>
+    <script src="script/utils/api.js"></script>
+    <script src="script/user.js"></script>
 </body>
 </html>

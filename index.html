@@ -4,62 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Game</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
     <header>
         <h1>JavaScript Memory Game</h1>
         <nav>
             <ul>
-                <li><a href="user.html">Gebruikerspagina</a></li> <!-- Nieuwe link -->
+                <li><a href="index.html" class="active">Memory Game</a></li>
+                <li><a href="user.html">Gebruikerspagina</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
+    <main class="game-main">
         <section id="login-section">
             <p>Je moet ingelogd zijn om het spel te spelen.</p>
             <a href="auth.html" id="login-button" class="button">Log in om verder te gaan</a>
         </section>
 
-        <!-- Game Status -->
         <section id="game-status" class="hidden">
             <p>Elapsed Time: <span id="elapsed-time">0</span> seconds</p>
             <p>Found Card Pairs: <span id="found-pairs">0</span></p>
-            <p>Remaining Display Time:</p>
-            <div id="time-display"></div>
         </section>
 
-        <!-- Game Board -->
-        <section id="game-board" class="hidden">
-            <!-- Dynamically create a 6x6 grid -->
-        </section>
+        <section id="game-board" class="hidden"></section>
 
-        <!-- Game Settings -->
         <section id="settings" class="hidden">
             <h2>Top Five</h2>
-            <ol id="top-five-list">
-                <li>Barack Obama: 200s</li>
-                <li>Bernie Sanders: 300s</li>
-                <li>Hillary Clinton: 400s</li>
-            </ol>
+            <ol id="top-five-list"></ol>
 
-            <p>Average Playtime: <span id="average-playtime">0s</span></p>
+            <div class="settings-group">
+                <label for="image-type">Kies het soort plaatjes:</label>
+                <select id="image-type">
+                    <option value="dog">DogAPI</option>
+                    <option value="lorem">Lorem Picsum</option>
+                    <option value="cat">The CATAAS</option>
+                    <option value="pokemon">Pokemon</option>
+                </select>
+            </div>
 
-            <label for="image-type">Kies het soort plaatjes:</label>
-            <select id="image-type">
-                <option value="dog">DogAPI</option>
-                <option value="lorem">Lorem Picsum</option>
-                <option value="cat">The CATAAS</option>
-                <option value="pokemon">Pokemon</option>
-            </select>
-
-            <label for="board-size">Board Size:</label>
-            <select id="board-size">
-                <option value="6">6x6</option>
-            </select>
+            <div class="settings-group">
+                <label for="board-size">Board Size:</label>
+                <select id="board-size">
+                    <option value="2">2x2</option>
+                    <option value="4">4x4</option>
+                    <option value="6" selected>6x6</option>
+                </select>
+            </div>
         </section>
-        
+
         <section class="hidden">
             <button id="start-game">Start New Game</button>
         </section>
@@ -68,7 +62,11 @@
     <footer>
         <p>© 2024 Memory Game</p>
     </footer>
-    <script src="api.js"></script>
-    <script src="script.js"></script>
+    <script src="script/utils/api.js"></script>
+    <script src="script/utils/constant.js"></script>
+    <script src="script/services/imageService.js"></script>
+    <script src="script/services/scoreService.js"></script>
+    <script src="script/services/storageService.js"></script>
+    <script src="script/game.js"></script>
 </body>
 </html>

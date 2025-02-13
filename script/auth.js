@@ -1,4 +1,3 @@
-// auth.js
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
 const showRegisterLink = document.getElementById("show-register");
@@ -6,7 +5,6 @@ const showLoginLink = document.getElementById("show-login");
 const loginBtn = document.getElementById("login-btn");
 const registerBtn = document.getElementById("register-btn");
 
-// Registreren via de backend
 registerBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const username = document.getElementById("register-username").value;
@@ -25,7 +23,7 @@ registerBtn.addEventListener("click", async (e) => {
     }
 
     try {
-        const response = await fetch("http://localhost:8000/register", { // Gebruik fetch
+        const response = await fetch("http://localhost:8000/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -39,14 +37,12 @@ registerBtn.addEventListener("click", async (e) => {
         }
 
         alert("Registratie succesvol!");
-        showLoginLink.click(); // Navigeer naar het login formulier
+        showLoginLink.click();
     } catch (error) {
         console.error("Registratiefout:", error.message);
         alert("Registratie mislukt: " + error.message);
     }
 });
-
-// auth.js
 
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -70,19 +66,18 @@ loginForm.addEventListener("submit", async (e) => {
         const data = await response.json();
         localStorage.setItem("authToken", data.token);
 
-        // Decode de JWT token
         const decodedToken = decodeJwt(data.token);
 
-        if (decodedToken && decodedToken.sub) { // De user ID zit in de 'sub' claim
-            localStorage.setItem("userId", decodedToken.sub); // Sla de user ID op
+        if (decodedToken && decodedToken.sub) {
+            localStorage.setItem("userId", decodedToken.sub);
         } else {
             console.error("User ID niet gevonden in JWT token.");
             alert("User ID niet gevonden in JWT token.  De applicatie kan niet correct functioneren.");
         }
 
         alert("Succesvol ingelogd!");
-        
-        await fetchAndStorePreferences(); // Haal de voorkeuren op en sla ze op
+
+        await fetchAndStorePreferences();
         window.location.href = "index.html";
     } catch (error) {
         console.error("Inlogfout:", error.message);
@@ -99,13 +94,12 @@ async function fetchAndStorePreferences() {
 
     try {
         const data = await apiRequest(`/api/player/${userId}/preferences`);
-        localStorage.setItem("preferences", JSON.stringify(data)); // Sla de voorkeuren op als JSON string
+        localStorage.setItem("preferences", JSON.stringify(data));
     } catch (error) {
         console.error("Fout bij ophalen voorkeuren:", error);
     }
 }
 
-// Tussen login en register wisselen
 showRegisterLink.addEventListener("click", (e) => {
     e.preventDefault();
     loginForm.classList.add("hidden");
@@ -118,17 +112,14 @@ showLoginLink.addEventListener("click", (e) => {
     loginForm.classList.remove("hidden");
 });
 
-// auth.js (vervolg)
-
 async function fetchUserIdAndRedirect() {
     try {
-        // Gebruik de username om de user ID op te halen
-        const username = document.getElementById("login-email").value; // Haal de gebruikersnaam uit het login formulier
-        const response = await fetch(`http://localhost:8000/api/player?username=${username}`, { // Gebruik de correcte route om een speler op te halen
+        const username = document.getElementById("login-email").value;
+        const response = await fetch(`http://localhost:8000/api/player?username=${username}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("authToken")}` // Voeg de token toe
+                "Authorization": `Bearer ${localStorage.getItem("authToken")}`
             },
         });
 
@@ -139,12 +130,11 @@ async function fetchUserIdAndRedirect() {
 
         const data = await response.json();
 
-        localStorage.setItem("userId", data.id); // Sla de user ID op
+        localStorage.setItem("userId", data.id);
 
-        window.location.href = "index.html"; // Terug naar de gamepagina
+        window.location.href = "index.html";
     } catch (error) {
         console.error("Fout bij ophalen user ID:", error.message);
         alert("Fout bij ophalen user ID: " + error.message);
-        // Optioneel: Log de gebruiker uit als het ophalen van de user ID mislukt
     }
 }

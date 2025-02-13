@@ -1,5 +1,3 @@
-// jwt.js of api.js
-
 function decodeJwt(token) {
     try {
         const base64Url = token.split('.')[1];

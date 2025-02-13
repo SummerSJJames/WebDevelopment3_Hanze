@@ -17,13 +17,14 @@ let startTime;
 let timerInterval;
 let imageSource = 'dog';
 let isProcessing = false;
+let isPlaying = false;
 
 const initializeGame = async () => {
     resetGame();
     applyStoredPreferences();
 
     const totalCards = boardSize * boardSize;
-    const uniqueImages = await generateRandomImages(totalCards / 2, imageSource); // Geef imageSource mee
+    const uniqueImages = await generateRandomImages(totalCards / 2, imageSource);
     const allImages = [...uniqueImages, ...uniqueImages].sort(() => Math.random() - 0.5);
 
     gameBoard.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
@@ -98,6 +99,7 @@ function handleCardClick(event) {
 }
 
 const resetGame = () => {
+    isPlaying = false;
     gameBoard.innerHTML = "";
     cards = [];
     firstCard = null;
@@ -128,7 +130,10 @@ const endGame = async () => {
 };
 
 startButton.addEventListener("click", () => {
-    initializeGame();
+    if (!isPlaying) {
+        initializeGame();
+        isPlaying = true;
+    }
 });
 
 imageSelect.addEventListener("change", (event) => {
@@ -145,8 +150,8 @@ if (isLoggedIn) {
     loginSection.style.display = 'none';
     gameSections.forEach(section => section.classList.remove('hidden'));
     fetchTopFive(apiRequest);
-    applyStoredPreferences();
-
+    applyStoredPreferences(imageSelect);
+    imageSource = imageSelect.value;
 } else {
     window.location.href = 'auth.html';
 }

@@ -15,10 +15,15 @@ const imageSources = {
         process: (response) => response.url
     },
     'pokemon': {
-        url: 'https://pokeapi.co/api/v2/pokemon/pikachu',
+        url: 'https://pokeapi.co/api/v2/pokemon', 
         process: async (response) => {
             const data = await response.json();
-            return data.sprites.front_default;
+            const randomIndex = Math.floor(Math.random() * data.results.length);
+            const pokemonUrl = data.results[randomIndex].url;
+
+            const pokemonResponse = await fetch(pokemonUrl);
+            const pokemonData = await pokemonResponse.json();
+            return pokemonData.sprites.front_default;
         }
     }
 };

@@ -1,4 +1,8 @@
-/* General Reset */
+:root {
+    --card-found-color: #00FF00;
+    --card-closed-color: #FFFFFF;
+  }
+
 * {
     margin: 0;
     padding: 0;
@@ -68,7 +72,7 @@ main {
     border-radius: 10px; /* Ronde hoeken voor de kaart */
     overflow: hidden; /* Zorgt ervoor dat de afbeelding niet uit de kaart kan steken */
     position: relative;
-    background-color: #f0f0f0;
+    background-color: var(--card-closed-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -94,12 +98,9 @@ main {
 }
 
 .card.matched {
-    background-color: #a0e0a0; /* Verander de achtergrondkleur van een gematchte kaart */
+    background-color: var(--card-found-color);
     pointer-events: none; /* Voorkom verdere interactie met gematchte kaarten */
-}
-
-.card:not(.open) {
-    background-color: #f0f0f0;
+    border: 2px solid var(--card-found-color);
 }
 
 /* Settings */
@@ -135,4 +136,8 @@ button:hover, .color:hover {
     #game-board {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+.hidden {
+    display: none;
 }

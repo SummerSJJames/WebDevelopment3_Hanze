@@ -11,99 +11,92 @@ let timerInterval;
 let imageSource = 'dog'; // Default image source
 let isProcessing = false; // Lock to prevent clicks during processing
 
-/// Functie voor het wijzigen van de afbeeldingstype zonder de game te resetten
+const loginSection = document.getElementById('login-section');
+const gameSections = document.querySelectorAll('.hidden');
+const topFiveList = document.getElementById("top-five-list");
+const averagePlaytime = document.getElementById("average-playtime");
+
+// API keys
+const theDogApiKey = 'YOUR_DOG_API_KEY'; // Vervang met je echte API key!
+
+// Functie voor het wijzigen van de afbeeldingstype zonder de game te resetten
 function changeImageSource(newSource) {
     imageSource = newSource;
-    // We wijzigen de bron, maar de game wordt niet direct gereset
-}
-
-// Functie om de afbeelding van een Pokémon op te halen
-async function fetchImage(pokemonName) {
-    if (imageSource === 'pokemon') {
-        try {
-            // Haal de afbeelding van de Pokémon API
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-            if (!response.ok) {
-                throw new Error("Pokémon niet gevonden");
-            }
-            const data = await response.json();
-            return data.sprites.front_default; // Pokémon afbeelding
-        } catch (error) {
-            console.error("Fout bij het ophalen van Pokémon-afbeelding:", error);
-            return 'https://via.placeholder.com/200?text=Pokemon+Not+Found'; // Fallback afbeelding
-        }
-    } else {
-        // Haal afbeelding op van andere bronnen
-        return fetchImageFromOtherSources();
-    }
 }
 
 // Functie om afbeeldingen op te halen van andere bronnen
-function fetchImageFromOtherSources() {
+async function fetchImageFromOtherSources() {
+    let imageUrl;
+
     if (imageSource === 'lorem') {
-        return fetch('https://picsum.photos/200')
-            .then(response => response.url)
-            .catch(error => {
-                console.error('Fout bij het ophalen van afbeelding van LoremPicsum:', error);
-                return 'https://via.placeholder.com/200?text=LoremPicsum+Error'; // Fallback afbeelding
-            });
+        imageUrl = 'https://picsum.photos/200';
     } else if (imageSource === 'dog') {
-        return fetch('https://dog.ceo/api/breeds/image/random')
-            .then(response => response.json())
-            .then(data => data.message)
-            .catch(error => {
-                console.error('Fout bij het ophalen van afbeelding van DogAPI:', error);
-                return 'https://via.placeholder.com/200?text=DogAPI+Error'; // Fallback afbeelding
-            });
+        imageUrl = 'https://dog.ceo/api/breeds/image/random';
     } else if (imageSource === 'cat') {
-        return fetch('https://cataas.com/cat')
-            .then(response => response.url)
-            .catch(error => {
-                console.error('Fout bij het ophalen van afbeelding van TheCataas:', error);
-                return 'https://via.placeholder.com/200?text=Cataas+Error'; // Fallback afbeelding
-            });
+        imageUrl = 'https://cataas.com/cat';
+    }  else if (imageSource === 'pokemon') {
+        imageUrl = 'https://pokeapi.co/api/v2/pokemon/pikachu';
+    } else {
+        console.error('Ongeldige image source:', imageSource);
+        return 'https://via.placeholder.com/200?text=Invalid+API';
+    }
+
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) {
+            throw new Error(`Afbeelding ophalen mislukt van: ${imageUrl}`);
+        }
+
+        if (imageSource === 'dog') {
+            const data = await response.json();
+            return data.message; // Dog API heeft een "message" veld
+        } else if (imageSource === 'pokemon') {
+            const data = await response.json();
+            return data.sprites.front_default;
+        }
+
+        return response.url; // CatAPI en Lorem Picsum geven direct een URL terug
+    } catch (error) {
+        console.error('Fout bij het ophalen van afbeelding:', error);
+        return 'https://via.placeholder.com/200?text=API+Error';
+    }
+}
+
+async function applyStoredPreferences() {
+    const preferences = localStorage.getItem("preferences");
+
+    if (preferences) {
+        const data = JSON.parse(preferences);
+        document.documentElement.style.setProperty('--card-found-color', data.color_found || '#00FF00');
+        document.documentElement.style.setProperty('--card-closed-color', data.color_closed || '#FFFFFF');
+    } else {
+        console.warn("Voorkeuren niet gevonden in localStorage.");
     }
 }
 
 // Functie om willekeurige afbeeldingen te genereren
 async function generateRandomImages(count) {
     const imageUrls = [];
-    const promises = [];
-    const pokemonNames = [
-        "pikachu", "bulbasaur", "charmander", "squirtle", "eevee", "jigglypuff",
-        "meowth", "psyduck", "snorlax", "mew", "charizard", "pidgey", "spheal",
-        "walrein", "dialga", "palkia", "sunkern", "blastoise"
-    ];
+    const usedImageUrls = new Set();
 
-    // Shuffle de lijst van Pokémon zodat we willekeurig een Pokémon kiezen zonder herhaling
-    const shuffledPokemonNames = pokemonNames.sort(() => Math.random() - 0.5);
-
-    // Kies willekeurige afbeeldingen op basis van de geselecteerde bron
-    for (let i = 0; i < count; i++) {
-        if (imageSource === 'pokemon') {
-            // Kies een unieke Pokémon van de geschudde lijst
-            const pokemonName = shuffledPokemonNames[i % shuffledPokemonNames.length];
-            promises.push(fetchImage(pokemonName)); // Haal de afbeelding op
-        } else {
-            // Kies een afbeelding van andere bronnen
-            promises.push(fetchImageFromOtherSources()); // Haal de afbeelding op
+    while (imageUrls.length < count) {
+        let imageUrl = await fetchImageFromOtherSources();
+        if (!usedImageUrls.has(imageUrl)) {
+            imageUrls.push(imageUrl);
+            usedImageUrls.add(imageUrl);
         }
     }
-
-    const images = await Promise.all(promises);
-    images.forEach(image => imageUrls.push(image));
-
     return imageUrls;
 }
 
 // Functie om het spel te initialiseren
 async function initializeGame() {
-    resetGame();  // Reset de game alleen wanneer dit expliciet wordt aangeroepen
+    resetGame();
+    applyStoredPreferences();
     const totalCards = 36;
     const uniqueImages = await generateRandomImages(totalCards / 2);
     const allImages = [...uniqueImages, ...uniqueImages].sort(() => Math.random() - 0.5);
 
-    // Maak de kaarten aan en voeg de afbeeldingen toe
     allImages.forEach((imageUrl) => {
         const card = document.createElement("div");
         card.classList.add("card");
@@ -113,7 +106,7 @@ async function initializeGame() {
         img.src = imageUrl;
         img.alt = "Image";
         img.classList.add("card-image");
-        img.style.display = "none"; // Verberg de afbeelding initieel
+        img.style.display = "none";
         card.appendChild(img);
 
         card.addEventListener("click", handleCardClick);
@@ -126,45 +119,36 @@ async function initializeGame() {
 function handleCardClick(event) {
     const clickedCard = event.target.closest('.card');
 
-    // Negeer klikken op reeds geopende of gematchte kaarten
     if (isProcessing || clickedCard.classList.contains("open") || clickedCard.classList.contains("matched")) {
         return;
     }
 
-    // Toon de afbeelding van de kaart
     clickedCard.classList.add("open");
     const img = clickedCard.querySelector("img");
-    img.style.display = "block"; // Toon de afbeelding
+    img.style.display = "block";
 
     if (!firstCard) {
-        // Zet de eerste kaart
         firstCard = clickedCard;
     } else {
-        // Zet de tweede kaart
         secondCard = clickedCard;
-        isProcessing = true; // Blokkeer het spel tijdens het vergelijken
+        isProcessing = true;
 
-        // Vergelijk de twee kaarten onmiddellijk
         if (firstCard.dataset.image === secondCard.dataset.image) {
-            // Als ze overeenkomen, voeg de 'matched' class toe
             firstCard.classList.add("matched");
             secondCard.classList.add("matched");
             firstCard = null;
             secondCard = null;
             matchesFound++;
 
-            // Controleer of het spel gewonnen is
             if (matchesFound === cards.length / 2) {
                 endGame();
             }
 
-            // Ontgrendel het spel na een korte vertraging
             setTimeout(() => {
                 isProcessing = false;
-            }, 300); // Korte vertraging voor visuele feedback
+            }, 300);
 
         } else {
-            // Als ze niet overeenkomen, sluit de kaarten
             setTimeout(() => {
                 firstCard.classList.remove("open");
                 secondCard.classList.remove("open");
@@ -173,9 +157,8 @@ function handleCardClick(event) {
                 firstCard = null;
                 secondCard = null;
 
-                // Ontgrendel het spel na het sluiten van de kaarten
                 isProcessing = false;
-            }, 500); // Korte vertraging voor mismatch
+            }, 500);
         }
     }
 }
@@ -200,20 +183,71 @@ function startTimer() {
     }, 1000);
 }
 
-// Functie om het spel te beëindigen
-function endGame() {
+async function endGame() {
     clearInterval(timerInterval);
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
     alert(`Gefeliciteerd! Je hebt alle paren gevonden in ${totalTime} seconden.`);
+
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+        alert("User ID niet gevonden. Log opnieuw in.");
+        window.location.href = "auth.html";
+        return;
+    }
+
+    try {
+        await apiRequest('/game/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: userId,
+                score: totalTime,
+                api: imageSource
+            }),
+        });
+    } catch (error) {
+        console.error('Fout bij opslaan van score:', error);
+        alert('Fout bij opslaan van score.');
+    }
+
+    fetchTopFive();
 }
 
-// Event listener voor de Start Game knop
+// Controleer of de gebruiker ingelogd is
+const isLoggedIn = localStorage.getItem('authToken') !== null;
+
+if (isLoggedIn) {
+    loginSection.style.display = 'none';
+    gameSections.forEach(section => section.classList.remove('hidden'));
+
+    fetchTopFive();
+
+} else {
+    window.location.href = 'auth.html';
+}
+
+// Event listeners
 startButton.addEventListener("click", () => {
     initializeGame();
     startTimer();
 });
 
-// Event listener voor het selecteren van de afbeeldingbron
 imageSelect.addEventListener("change", (event) => {
     imageSource = event.target.value;
 });
+
+async function fetchTopFive() {
+    try {
+        const data = await apiRequest('/scores');
+
+        const sortedScores = data.sort((a, b) => a.score - b.score);
+        const topFiveScores = sortedScores.slice(0, 5);
+
+        topFiveList.innerHTML = topFiveScores.map(score => `<li>${score.username}: ${score.score}s</li>`).join('');
+    } catch (error) {
+        console.error('Fout bij ophalen top 5 scores:', error);
+        topFiveList.innerHTML = '<li>Fout bij ophalen scores</li>';
+    }
+}

@@ -9,11 +9,21 @@
 <body>
     <header>
         <h1>JavaScript Memory Game</h1>
+        <nav>
+            <ul>
+                <li><a href="user.html">Gebruikerspagina</a></li> <!-- Nieuwe link -->
+            </ul>
+        </nav>
     </header>
 
     <main>
+        <section id="login-section">
+            <p>Je moet ingelogd zijn om het spel te spelen.</p>
+            <a href="auth.html" id="login-button" class="button">Log in om verder te gaan</a>
+        </section>
+
         <!-- Game Status -->
-        <section id="game-status">
+        <section id="game-status" class="hidden">
             <p>Elapsed Time: <span id="elapsed-time">0</span> seconds</p>
             <p>Found Card Pairs: <span id="found-pairs">0</span></p>
             <p>Remaining Display Time:</p>
@@ -21,46 +31,44 @@
         </section>
 
         <!-- Game Board -->
-        <section id="game-board">
+        <section id="game-board" class="hidden">
             <!-- Dynamically create a 6x6 grid -->
-            
-            <!-- Repeat until 6x6 grid -->
         </section>
 
         <!-- Game Settings -->
-        <section id="settings">
+        <section id="settings" class="hidden">
             <h2>Top Five</h2>
-            <ol>
+            <ol id="top-five-list">
                 <li>Barack Obama: 200s</li>
                 <li>Bernie Sanders: 300s</li>
                 <li>Hillary Clinton: 400s</li>
-                <li>Donald Trump: 500s</li>
-                <li>Jeb Bush: 600s</li>
             </ol>
 
             <p>Average Playtime: <span id="average-playtime">0s</span></p>
 
             <label for="image-type">Kies het soort plaatjes:</label>
-    <select id="image-type">
-        <option value="dog">DogAPI</option>
-        <option value="lorem">Lorem Picsum</option>
-        <option value="cat">The CATAAS</option>
-        <option value="pokemon">Pokemon</option>
-    </select>
+            <select id="image-type">
+                <option value="dog">DogAPI</option>
+                <option value="lorem">Lorem Picsum</option>
+                <option value="cat">The CATAAS</option>
+                <option value="pokemon">Pokemon</option>
+            </select>
 
             <label for="board-size">Board Size:</label>
             <select id="board-size">
                 <option value="6">6x6</option>
             </select>
         </section>
-        <section>
+        
+        <section class="hidden">
             <button id="start-game">Start New Game</button>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Memory Game</p>
+        <p>© 2024 Memory Game</p>
     </footer>
+    <script src="api.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
